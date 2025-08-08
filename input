@@ -1,0 +1,24 @@
+input script for analysis
+format: keyword, arguments
+End_of_header           ***********please keep the content of this line fixed!******************
+
+DCDFILE pa_chain_new.dcd
+PSFFILE pa_chain_new.psf 
+
+# Group selection
+
+GROUP  all 
+
+# Analysis options
+# General format: analysis function, keyword1, arguments, keyword2, arguments,............
+# Analysis options:
+# 1. anglezs_rings
+# 2. mindangles_seg_dislocated
+# 3. mindangles_seg
+# 3. avedangles_seg
+
+ANALYSIS random_walk group 0 vector1d 0 vector2d 0 voidf 1 output 0 headname C1 headbondname C2 endname C1 endbondname C2 name_ref H3 bl 1.535 filename rotated_pa8.pdb 
+
+
+
+End_of_file           ***********please keep the content of this line fixed!******************

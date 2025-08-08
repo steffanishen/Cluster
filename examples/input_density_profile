@@ -1,0 +1,32 @@
+input script for analysis
+format: keyword, arguments
+End_of_header           ***********please keep the content of this line fixed!******************
+
+DCDFILE membrane_water.dcd 
+DCDFILE membrane_water_1.dcd 
+DCDFILE membrane_water_2.dcd 
+PSFFILE membrane_water.psf 
+
+# Group selection
+
+GROUP resname DPYF DPYR DPYL 
+
+# Monomers section
+
+
+# Analysis options
+# General format: analysis function, keyword1, arguments, keyword2, arguments,............
+# Analysis options:
+# 1. anglezs_rings
+# 2. mindangles_seg_dislocated
+# 3. mindangles_seg
+# 3. avedangles_seg
+# 4. random_walk
+# 5. density_profile
+
+ANALYSIS density_profile group 0 vector1d 1 vector2d 0 voidf 0 output 0 filename polymer_profile.dat nbins 125 which_density_profile mass
+
+
+
+
+End_of_file           ***********please keep the content of this line fixed!******************

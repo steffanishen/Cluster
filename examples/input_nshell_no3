@@ -1,0 +1,31 @@
+input script for analysis
+format: keyword, arguments
+End_of_header           ***********please keep the content of this line fixed!******************
+
+DCDFILE membrane_water_5.dcd 
+PSFFILE membrane_water.psf 
+
+# Group selection
+
+GROUP atom_index 16520
+GROUP atomtype OTW
+
+# Monomers section
+
+
+# Analysis options
+# General format: analysis function, keyword1, arguments, keyword2, arguments,............
+# Analysis options:
+# 1. anglezs_rings
+# 2. mindangles_seg_dislocated
+# 3. mindangles_seg
+# 3. avedangles_seg
+# 4. random_walk
+# 5. density_profile
+
+ANALYSIS nshell group 0 group1 1 vector1d 1 vector2d 0 voidf 0 output 0 filename nshell_no3.dat nbins 125 dist_crit 4.55
+
+
+
+
+End_of_file           ***********please keep the content of this line fixed!******************

@@ -1,0 +1,6 @@
+1. When passing arrays between classes, one has to be very careful about making the array sizes consistent
+2. It is memory-saving to use pointers to pass arrays between classes
+3. When using while (getline(istringstream xx,string xx)) one has to consider if the end of file is reached.
+4. Note c++ vectors don't check overflow
+5. For base class pointer usage, the base class should contain all functions of derivative classes, some of which declared as virtual functions
+

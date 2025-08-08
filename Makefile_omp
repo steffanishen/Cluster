@@ -1,0 +1,44 @@
+# This is a makefile.
+# This makes a parallel simulation for same dielectric problem
+# Use option -p in CC for profiling with gprof
+
+PROG = read_dcd 
+
+#SRC = main.cpp interface.cpp functions.cpp parallel_precal.cpp cpmd.cpp uniform_pcpmdforces.cpp uniform_penergies.cpp
+#SRC = main.cpp ewald.cpp interface.cpp functions.cpp parallel_precal.cpp cpmd.cpp uniform_pcpmdforces.cpp uniform_penergies.cpp
+SRC=$(wildcard ./src/*.cpp)
+
+
+
+OBJ = ${SRC:.cpp=.o}
+
+.SUFFIXES: .cpp .o
+
+#CC = g++ -O3 -g -Wall
+# do not use -fopenmp unless parallelizing properly. 
+CC = g++ -O3 -g -Wall -fopenmp
+
+LFLAG = 
+
+LIBS = -I./include
+#LIBS = -I/usr/include/ -L/usr/lib
+
+CFLAG = -c
+
+OFLAG = -o
+
+$(PROG) : $(OBJ)
+#	$(CC) $(OFLAG) $@ $^ $(LFLAG)
+	$(CC) $(OFLAG) $@ $^ $(LIBS) $(LFLAG)
+#	$(CC) $(LIBS) $(LFLAG) $(OFLAG) $@ $^
+
+.cpp.o :
+#	$(CC) $(CFLAG) $(OFLAG) $@ $< 
+	$(CC) $(CFLAG) $(OFLAG) $@ $< $(LIBS) $(LFLAG)
+#	$(CC) $(LIBS) $(CFLAG) $(OFLAG) $@ $<
+
+clean:
+	rm -f src/*.o
+
+dataclean:
+	rm -f outfiles/*.dat outfiles/*.xyz  outfiles/*.lammpstrj  datafiles/*.dat

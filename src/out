@@ -1,0 +1,100 @@
+    residue_cluster_ind.resize(system->segments.size(), vector<int>(system->segments[0].size() ));
+    system->resid_ind.clear();
+                system->resid_ind.push_back(i1);
+void ANALYSIS_PATCH_NO_ORDER::flagallinres(int segid_ind, int resid_ind) {
+    int natoms = system->segments[segid_ind][resid_ind].size();
+        int flag_index = system->segments[segid_ind][resid_ind][i];
+void ANALYSIS_PATCH_NO_ORDER::flagallinresiffunctionalized(int segid_ind, int resid_ind) {
+    int natoms = system->segments[segid_ind][resid_ind].size();
+        int flag_index = system->segments[segid_ind][resid_ind][i];
+            int flag_index = system->segments[segid_ind][resid_ind][i];
+void ANALYSIS_PATCH_NO_ORDER::flagfunctionalizationiffunctionalized(int segid_ind, int resid_ind) {
+    int natoms = system->segments[segid_ind][resid_ind].size();
+        int flag_index = system->segments[segid_ind][resid_ind][i];
+            int flag_index = system->segments[segid_ind][resid_ind][i];
+void ANALYSIS_PATCH_NO_ORDER::flagfunctionalization(int segid_ind, int resid_ind) {
+    int natoms = system->segments[segid_ind][resid_ind].size();
+        int flag_index = system->segments[segid_ind][resid_ind][i];
+    nresidues = 0;
+            residue_cluster_ind[i][i1] = icluster;
+            cluster_temp->residue_members.push_back({i,i1});
+            nresidues++;
+        clusters[cluster_main_id]->residue_members.insert(clusters[cluster_main_id]->residue_members.end(),clusters[cluster_id]->residue_members.begin(),clusters[cluster_id]->residue_members.end());
+    int resid_temp;
+            for (int i1 = 0; i1 < clusters[i]->residue_members.size(); i1++) {
+                segid_temp = clusters[i]->residue_members[i1][0];
+                resid_temp = clusters[i]->residue_members[i1][1];
+                residue_cluster_ind[segid_temp][resid_temp] = icluster;
+    int resid_temp;
+            for (int i1 = 0; i1 < clusters[i]->residue_members.size(); i1++) {
+                segid_temp = clusters[i]->residue_members[i1][0];
+                resid_temp = clusters[i]->residue_members[i1][1];
+                residue_cluster_ind[segid_temp][resid_temp] = icluster;
+    //clusters[minid]->residue_members.insert(clusters[minid]->residue_members.end(),clusters[maxid]->residue_members.begin(),clusters[maxid]->residue_members.end());
+    for (int i = 0; i < clusters[maxid]->residue_members.size(); i++) {
+        int segid_temp = clusters[maxid]->residue_members[i][0];
+        int resid_temp = clusters[maxid]->residue_members[i][1];
+        residue_cluster_ind[segid_temp][resid_temp] = minid;
+        clusters[minid]->residue_members.push_back({segid_temp,resid_temp});
+    clusters[maxid]->residue_members.clear();
+            int resid_temp0 = system->resid_ind[iatom];
+            int resid_temp1 = system->resid_ind[jatom];
+            if (segid_temp0 != segid_temp1 || resid_temp0 != resid_temp1) {
+                cluster1 = residue_cluster_ind[segid_temp0][resid_temp0];
+                cluster2 = residue_cluster_ind[segid_temp1][resid_temp1]; 
+    int resid_run = -1;
+    vector<int> residues_item;
+            if (! (system->segid[ibonded] == system->segid[atom_index] && system->resid[ibonded] == system->resid[atom_index])) flag = 1;
+    atoms_select->residues.clear();
+            residues_item.push_back(atom.atom_index);
+	        resid_run = system->resid[atom.atom_index];
+	            atoms_select->residues.push_back(residues_item);
+	            segments_item.push_back(residues_item);
+  	    if (system->resid[atom.atom_index] != resid_run || system->segid[atom.atom_index] != segid_run) {
+	        atoms_select->residues.push_back(residues_item);
+	        segments_item.push_back(residues_item);
+	        resid_run = system->resid[atom.atom_index];
+		residues_item.clear();
+	    residues_item.push_back(atom.atom_index);
+	    atoms_select->residues.push_back(residues_item);
+	    segments_item.push_back(residues_item);
+	    residues_item.clear();
+  	    if (system->resid[atom.atom_index] != resid_run || system->segid[atom.atom_index] != segid_run) {
+	        atoms_select->residues.push_back(residues_item);
+	        segments_item.push_back(residues_item);
+	        resid_run = system->resid[atom.atom_index];
+		residues_item.clear();
+            residues_item.push_back(atom.atom_index);
+	for (auto &residue : segment) {
+	    for (auto &atomid : residue) {
+// Consider if residues are NC4 functionalized or not
+                    cout << "Atomname: " << system->atomname[ind] << "; Resname: " << system->resname[ind] << "; index: " << system->atom_index[ind] << " ; segid: " << system->segid[ind] << "; resid: " << system->resid[ind] << " ; Charge: " << system->charge[ind] << endl;
+// Initialize the residue clusters
+    cout << "nresidues: " << nresidues << "; nclusters: " << nclusters << endl;
+            if (system->resid[ind1] == 649 && system->atom_index[ind1] == 9907) cout << "Inner loop print resid1 649: " << system->resid[ind1] << "; resid2: " << system->resid[ind2] << endl;
+                                        if (!(system->segid[ind1] == system->segid[ind2] && system->resid[ind1] == system->resid[ind2])) {
+        int resid1 = system->resid[ind1];       
+        int resid2 = system->resid[ind2];       
+        int resid1_ind = system->resid_ind[ind1];       
+        int resid2_ind = system->resid_ind[ind2];       
+        int resid_temp;
+                resid_temp = system->resid[ind1];
+                flagallinresifcrosslinked(segid_temp, resid_temp);
+                resid_temp = system->resid[ind2];
+                flagallinresifcrosslinked(segid_temp, resid_temp);
+            if (system->resid[ind1] == 649 || system->resid[ind2] == 649) cout << "Print resid 649: " << system->resid[ind1] << endl;
+            // if the two residues are not in the same cluster
+                    cluster1 = residue_cluster_ind[segid1_ind][resid1_ind];
+                    cluster2 = residue_cluster_ind[segid2_ind][resid2_ind]; 
+                        *this->file_temp << "patch " << patchtype << " " << segid1 << ":" << resid1 << " " << segid2 << ":" << resid2 << endl;
+                        *this->seg_res_ids << segid1 << " " << resid1 << " " << segid2 << " " << resid2 << endl;
+                            flagallinres(segid1_ind, resid1_ind);
+                            flagfunctionalization(segid2_ind, resid2_ind);
+                            flagallinres(segid2_ind, resid2_ind);
+                            flagfunctionalization(segid1_ind, resid1_ind);
+                        *this->file_temp << "patch " << patchtype << " " << segid1 << ":" << resid1 << " " << segid2 << ":" << resid2 << endl;
+                        *this->seg_res_ids << segid1 << " " << resid1 << " " << segid2 << " " << resid2 << endl;
+                            flagallinres(segid1_ind, resid1_ind);
+                            flagfunctionalization(segid2_ind, resid2_ind);
+                            flagallinres(segid2_ind, resid2_ind);
+                            flagfunctionalization(segid1_ind, resid1_ind);

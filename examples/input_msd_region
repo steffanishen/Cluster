@@ -1,0 +1,30 @@
+input script for analysis
+format: keyword, arguments
+End_of_header           ***********please keep the content of this line fixed!******************
+
+DCDFILE temp.dcd 
+PSFFILE ../data/membrane_water_NaNO3.psf
+
+# Group selection
+
+GROUP atomtype NTA
+
+# Monomers section
+
+
+# Analysis options
+# General format: analysis function, keyword1, arguments, keyword2, arguments,............
+# Analysis options:
+# 1. anglezs_rings
+# 2. mindangles_seg_dislocated
+# 3. mindangles_seg
+# 3. avedangles_seg
+# 4. random_walk
+# 5. density_profile
+
+ANALYSIS msd_region group 0 vector1d 1 vector2d 0 voidf 0 output 0 filename msd_region.dat dtmax 250 z 25.0 75.0
+
+
+
+
+End_of_file           ***********please keep the content of this line fixed!******************

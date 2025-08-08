@@ -1,0 +1,32 @@
+input script for analysis
+format: keyword, arguments
+End_of_header           ***********please keep the content of this line fixed!******************
+
+DCDFILE membrane_water_2.dcd 
+PSFFILE membrane_water.psf 
+
+# Group selection
+# Note: for booleans, i.e., not, and, or to work, parentheses need to be imposed
+
+GROUP atom_index 15845 
+GROUP ( resname DPYF DPYR DPYL ) 
+
+# Monomers section
+
+
+# Analysis options
+# General format: analysis function, keyword1, arguments, keyword2, arguments,............
+# Analysis options:
+# 1. anglezs_rings
+# 2. mindangles_seg_dislocated
+# 3. mindangles_seg
+# 3. avedangles_seg
+# 4. random_walk
+# 5. density_profile
+
+ANALYSIS inter_energy group 0 group1 1 vector1d 1 vector2d 0 voidf 0 output 0 filename inter_energy_cl_with_polymer.dat dist_crit 3.95
+
+
+
+
+End_of_file           ***********please keep the content of this line fixed!******************

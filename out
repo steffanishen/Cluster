@@ -1,0 +1,10 @@
+.git/logs/HEAD:8a69cff291bc2c56163b34213b1cc207d997eef1 d5d5c625ecdfefb12687231f1ea3caf6613e798d MS <steffanishen@gmail.com> 1754676819 -0700	commit: checkpoint
+.git/logs/HEAD:d5d5c625ecdfefb12687231f1ea3caf6613e798d d5d5c625ecdfefb12687231f1ea3caf6613e798d MS <steffanishen@gmail.com> 1754676892 -0700	checkout: moving from main to cluster
+.git/logs/HEAD:d5d5c625ecdfefb12687231f1ea3caf6613e798d d5d5c625ecdfefb12687231f1ea3caf6613e798d MS <steffanishen@gmail.com> 1754677818 -0700	checkout: moving from cluster to main
+.git/logs/HEAD:d5d5c625ecdfefb12687231f1ea3caf6613e798d 3289e40ff75c1a66197abf886fb70728032f4012 MS <steffanishen@gmail.com> 1754679120 -0700	commit: checkpoint
+.git/logs/HEAD:3289e40ff75c1a66197abf886fb70728032f4012 d5d5c625ecdfefb12687231f1ea3caf6613e798d MS <steffanishen@gmail.com> 1754679748 -0700	reset: moving to HEAD~1
+.git/logs/HEAD:d5d5c625ecdfefb12687231f1ea3caf6613e798d b3c9d8f874c09f8c57925e5d6f62d11f180d362c MS <steffanishen@gmail.com> 1754679760 -0700	commit: Remove secret
+.git/logs/refs/heads/cluster:0000000000000000000000000000000000000000 d5d5c625ecdfefb12687231f1ea3caf6613e798d MS <steffanishen@gmail.com> 1754676892 -0700	branch: Created from HEAD
+.git/logs/refs/heads/main:3289e40ff75c1a66197abf886fb70728032f4012 d5d5c625ecdfefb12687231f1ea3caf6613e798d MS <steffanishen@gmail.com> 1754679748 -0700	reset: moving to HEAD~1
+.git/logs/refs/heads/main:d5d5c625ecdfefb12687231f1ea3caf6613e798d b3c9d8f874c09f8c57925e5d6f62d11f180d362c MS <steffanishen@gmail.com> 1754679760 -0700	commit: Remove secret
+.git/refs/heads/cluster:d5d5c625ecdfefb12687231f1ea3caf6613e798d
