@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//***************** Partially contributed by Meng Shen since 06/10/2018 ***************************
+//***************** Contributed by Meng Shen since 06/10/2018 ***************************
 //***************** Email: steffanishen@gmail.com ***************************************
 //***************** use of this class must follow anglezs_rings **************************
 
@@ -47,7 +47,7 @@ public:
     //
     int iframe;
 
-    ANALYSIS_CLUSTER(PSF *system, GROUP *sel1, GROUP *sel2, int vector1d, int vector2d, int voidf, string filename, float dist_crit, float dr); //constructor
+    ANALYSIS_CLUSTER(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, float dist_crit, float cellsize); //constructor
     
     void init();
 

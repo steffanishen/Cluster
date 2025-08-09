@@ -606,15 +606,12 @@ vector<ANALYSIS*> ANALYSIS_POINTERS::init() {
 
         } else if (analysis_opt[0] == "cluster") {
                 int groupid;
-                int groupid1;
                 int whichN;
                 float dist_crit;
-                float dr;
+                float cellsize;
                 for (int argid = 1; argid < analysis_opt.size(); argid++) {
                     if (analysis_opt[argid] == "group") {
                         groupid = stoi(analysis_opt[argid+1]);
-                    } else if (analysis_opt[argid] == "group1") {
-                        groupid1 = stoi(analysis_opt[argid+1]);
                     }  else if (analysis_opt[argid] == "vector1d") {
                         vector1d = stoi(analysis_opt[argid+1]);
                     }  else if (analysis_opt[argid] == "vector2d") {
@@ -625,11 +622,11 @@ vector<ANALYSIS*> ANALYSIS_POINTERS::init() {
                         filename = analysis_opt[argid+1];
                     }  else if (analysis_opt[argid] == "dist_crit") {
                         dist_crit = stof(analysis_opt[argid+1]);
-                    }  else if (analysis_opt[argid] == "dr") {
-                        dr = stof(analysis_opt[argid+1]);
+                    }  else if (analysis_opt[argid] == "cellsize") {
+                        cellsize = stof(analysis_opt[argid+1]);
                     }
                 }
-                analysis.push_back(new ANALYSIS_CLUSTER(system,sels[groupid],sels[groupid1],vector1d,vector2d,voidf,filename,dist_crit,dr));
+                analysis.push_back(new ANALYSIS_CLUSTER(system,sels[groupid],vector1d,vector2d,voidf,filename,dist_crit,cellsize));
 
         } else if (analysis_opt[0] == "patch_no_order") {
                 int groupid;
