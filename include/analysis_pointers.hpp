@@ -49,6 +49,7 @@
 #include "analysis_msd_region.hpp"
 #include "analysis_contact_angle.hpp"
 #include "analysis_contact_angle_density_profile.hpp"
+#include "analysis_cluster.hpp"
 #include "input.hpp"
 #ifndef ANALYSIS_POINTERS_HPP
 #define	ANALYSIS_POINTERS_HPP
