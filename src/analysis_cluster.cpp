@@ -58,6 +58,20 @@ ANALYSIS_CLUSTER::ANALYSIS_CLUSTER(PSF *system, GROUP *sel1, int vector1d, int v
 void ANALYSIS_CLUSTER::init() {
 }
 
+void ANALYSIS_CLUSTER::wrap_positions() {
+
+    for (auto &segment:sel1->segments_ind) {
+	    for (int ind : segment) {
+	        system->x[ind] = remainder(system->x[ind],system->pbc[0]);
+	        system->y[ind] = remainder(system->y[ind],system->pbc[1]);
+	        system->z[ind] = remainder(system->z[ind],system->pbc[2]);
+
+	    }
+
+    }
+}
+
+
 vector<float> ANALYSIS_CLUSTER::compute_vector() {
     sel1->anglezs.clear();
     vector<float> r(3,0.0);
@@ -76,16 +90,24 @@ vector<float> ANALYSIS_CLUSTER::compute_vector() {
     int nbins = int(this->dist_crit/dr);
     this->iframe += 1;
 
-    //cout <<"dist_crit: " << this->dist_crit<< "  dr: " << dr << " rdf bin: " << nbins << endl;
-    //cout << "rdf nbins: " << nbins << endl;
-
-    vector<float> rdf(nbins,0.0);
+    vector<float> cluster_size;
 
     if (sel1->NATOM == 0) error1.error_exit("ERROR: sel1 doesn't contain any atoms!");
     //cout << "sel1->NATOM: " << sel1->NATOM << endl; //for debug purpose
     //cout << "sel2->NATOM: " << sel2->NATOM << endl; //for debug purpose
-//    cout << "M_PI" << M_PI << endl;// for debug purpose
- 
+
+    // Before everything, wrap the atom coordinates over PBC
+    wrap_positions();
+    // First, create the linked cell list
+    // Assign atoms to cells
+
+    // Obtain headers of each cell, and linked list of each atom
+
+    // Second, build the adjancency list for each atom
+
+    // Third, do breadth first search (BFS) to identify clusters
+    
+
     for (auto &segment:sel1->segments_ind) {
 	    for (int ind : segment) {
 	        r[0] = system->x[ind];
@@ -102,7 +124,7 @@ vector<float> ANALYSIS_CLUSTER::compute_vector() {
 /*
 */
 
-    return rdf;
+    return cluster_size;
 }
 
 

@@ -52,6 +52,7 @@ public:
     void init();
 
     vector<float> compute_vector();
+    void wrap_positions();
      
     ~ANALYSIS_CLUSTER();
 
