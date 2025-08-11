@@ -239,17 +239,17 @@ vector<float> ANALYSIS_CLUSTER::compute_vector() {
     vector<vector<int>> adj_list = adjacency_list();
 
     //debug
-    cout << "adjacency list: " << endl;
-    for (vector<int> adj_l : adj_list) {
-        cout << adj_l.size() << endl;
-    }
+    //cout << "adjacency list: " << endl;
+    //for (vector<int> adj_l : adj_list) {
+    //    cout << adj_l.size() << endl;
+    //}
     //end debug
 
     // Third, do breadth first search (BFS) to identify clusters
         // Initialize the remaining proteins
     std::deque<int> remaining_proteins(sel1->NATOM);
     std::iota(remaining_proteins.begin(), remaining_proteins.end(), 0); // Fill with 0, 1, ..., natoms-1
-        // Starting from current cluster_id, identify the clusters. Keep isolated proteins in cluster_id=0
+        // Starting from current cluster_id, identify the clusters. Keep isolated proteins' cluster_id=0
     int current_cluster_id = 0;
                 //cout << "cluster_id: " << current_cluster_id << " remaining proteins: " << remaining_proteins.size() << endl;//debug
 
@@ -259,6 +259,10 @@ vector<float> ANALYSIS_CLUSTER::compute_vector() {
         remaining_proteins.pop_front();    // Remove the first element (popleft)
 
         std::vector<int> current_cluster; // Keep track of atoms assigned to the current cluster
+        current_cluster.push_back(i); // Add atom 'i' to the current cluster
+        
+        std::deque<int> queue; // BFS queue
+        queue.push_back(i);
 
         // Check if `i` has neighbors.
         // In the original Python, `len(adj_list[i]) > 0` is used. 
@@ -267,10 +271,7 @@ vector<float> ANALYSIS_CLUSTER::compute_vector() {
         if (!adj_list[i].empty()) { 
             current_cluster_id++;
             cluster_id[i] = current_cluster_id;
-            current_cluster.push_back(i); // Add atom 'i' to the current cluster
 
-            std::deque<int> queue; // BFS queue
-            queue.push_back(i);
 
             while (!queue.empty()) {
                 int current_node = queue.front();
@@ -314,7 +315,7 @@ vector<float> ANALYSIS_CLUSTER::compute_vector() {
     int i = 0;
     for (auto &segment:sel1->segments_ind) {
 	    for (int ind : segment) {
-            *xyz_file << cluster_id[i] << " " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
+            *xyz_file << clusters[cluster_id[i]].size() << " " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
             //*xyz_file << cluster_id[i] << " " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << " " << system->pbc[1] << endl; 
             i++;
         }
