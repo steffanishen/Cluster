@@ -45,10 +45,16 @@ public:
 //    GROUP *sel1;
  //   int whichN;
     //
-    int iframe;
+    ofstream *xyz_file;
 
-    ANALYSIS_CLUSTER(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, float dist_crit, float cellsize); //constructor
+    int iframe;
+    string xyz_filename;
+    vector<int> prot_id;
+
+    ANALYSIS_CLUSTER(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, float dist_crit, float cellsize); //constructor
     
+    vector<vector<int>> adjacency_list();
+
     void init();
 
     vector<float> compute_vector();
