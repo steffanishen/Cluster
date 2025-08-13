@@ -33,14 +33,14 @@
 #include <algorithm>
 
 #include <math.h>
-#include "analysis_cluster.hpp"
+#include "analysis_persistence.hpp"
 
 
 #define PI 3.14159265
 
 using namespace std;
 
-ANALYSIS_CLUSTER::ANALYSIS_CLUSTER(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, float dist_crit, float cellsize)
+ANALYSIS_PERSISTENCE::ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, float dist_crit, float cellsize)
 {
     this->system = system;
     this->sel1 = sel1;
@@ -62,10 +62,10 @@ ANALYSIS_CLUSTER::ANALYSIS_CLUSTER(PSF *system, GROUP *sel1, int vector1d, int v
 
 }
 
-void ANALYSIS_CLUSTER::init() {
+void ANALYSIS_PERSISTENCE::init() {
 }
 
-void ANALYSIS_CLUSTER::wrap_positions() {
+void ANALYSIS_PERSISTENCE::wrap_positions() {
 
     for (auto &segment:sel1->segments_ind) {
 	    for (int ind : segment) {
@@ -78,7 +78,7 @@ void ANALYSIS_CLUSTER::wrap_positions() {
     }
 }
 
-vector<vector<int>> ANALYSIS_CLUSTER::adjacency_list() {
+vector<vector<int>> ANALYSIS_PERSISTENCE::adjacency_list() {
 
     vector<int> linkedlist(sel1->NATOM,-1);
     vector<vector<int>> adj_list(sel1->NATOM);
@@ -204,7 +204,7 @@ vector<vector<int>> ANALYSIS_CLUSTER::adjacency_list() {
     return adj_list;
 }
 
-vector<float> ANALYSIS_CLUSTER::compute_vector() {
+vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
     sel1->anglezs.clear();
     vector<float> r(3,0.0);
     vector<float> r1(3,0.0);
@@ -308,8 +308,8 @@ vector<float> ANALYSIS_CLUSTER::compute_vector() {
 
 
 
-    //*xyz_file << sel1->NATOM << endl;
     *xyz_file << sel1->NATOM << " " << system->pbc[0] << " " << system->pbc[2] << " " << system->pbc[5]  << endl;
+    //*xyz_file << sel1->NATOM << endl;//<< " " << system->pbc[0] << " " << system->pbc[2] << " " << system->pbc[5]  << endl;
     *xyz_file << endl;
 
     int i = 0;
@@ -326,7 +326,7 @@ vector<float> ANALYSIS_CLUSTER::compute_vector() {
 }
 
 
-ANALYSIS_CLUSTER::~ANALYSIS_CLUSTER()
+ANALYSIS_PERSISTENCE::~ANALYSIS_PERSISTENCE()
 {
     system = NULL;
     sel1 = NULL;
