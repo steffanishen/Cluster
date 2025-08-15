@@ -40,7 +40,7 @@
 
 using namespace std;
 
-ANALYSIS_PERSISTENCE::ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, string networks_xyz_filename, string chains_xyz_filename,  float dist_crit, float cellsize)
+ANALYSIS_PERSISTENCE::ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, string networks_xyz_filename, string chains_xyz_filename, string rings_xyz_filename,  float dist_crit, float cellsize)
 {
     this->system = system;
     this->sel1 = sel1;
@@ -52,6 +52,7 @@ ANALYSIS_PERSISTENCE::ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1
     xyz_file = new ofstream (xyz_filename.c_str());
     networks_xyz_file = new ofstream (networks_xyz_filename.c_str());
     chains_xyz_file = new ofstream (chains_xyz_filename.c_str());
+    rings_xyz_file = new ofstream (rings_xyz_filename.c_str());
     this->dist_crit = dist_crit;
     this->cellsize = cellsize;
     //this->rdf_count.resize(nbins);
@@ -222,6 +223,7 @@ vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
     this->edgesVisited.clear();
     this->adj_list.clear();
     this->adj_list.resize(sel1->NATOM);
+    vector<vector<int>> networks;
     vector<vector<int>> chains;
     vector<vector<int>> rings;
     vector<float> r(3,0.0);
@@ -266,7 +268,7 @@ vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
                 if (edge_visited(hub, nb)) continue;
                 mark_edge(hub, nb);
                 std::vector<int> chain = traverse_chain(hub, nb);
-                chains.push_back(chain);
+                networks.push_back(chain);
             }
         }
 
@@ -319,7 +321,7 @@ vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
     }
 
     int n_networks = 0;
-    for (auto &chain: chains) {
+    for (auto &chain: networks) {
         n_networks += chain.size();
     }
 
@@ -327,13 +329,51 @@ vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
     //*xyz_file << sel1->NATOM << endl;//<< " " << system->pbc[0] << " " << system->pbc[2] << " " << system->pbc[5]  << endl;
     *networks_xyz_file << endl;
 
-    for (auto &chain: chains) {
+    for (auto &chain: networks) {
         for (int id_chain: chain){
             int ind = prot_id[id_chain];
                 *networks_xyz_file << "networks " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
 
         }
     }
+
+
+    int n_chains = 0;
+    for (auto &chain: chains) {
+        n_chains += chain.size();
+    }
+
+    *chains_xyz_file << n_chains << " " << system->pbc[0] << " " << system->pbc[2] << " " << system->pbc[5]  << endl;
+    //*xyz_file << sel1->NATOM << endl;//<< " " << system->pbc[0] << " " << system->pbc[2] << " " << system->pbc[5]  << endl;
+    *chains_xyz_file << endl;
+
+    for (auto &chain: chains) {
+        for (int id_chain: chain){
+            int ind = prot_id[id_chain];
+                *chains_xyz_file << "chains " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
+
+        }
+    }
+
+
+    int n_rings = 0;
+    for (auto &chain: rings) {
+        n_rings += chain.size();
+    }
+
+    *rings_xyz_file << n_rings << " " << system->pbc[0] << " " << system->pbc[2] << " " << system->pbc[5]  << endl;
+    //*xyz_file << sel1->NATOM << endl;//<< " " << system->pbc[0] << " " << system->pbc[2] << " " << system->pbc[5]  << endl;
+    *rings_xyz_file << endl;
+
+    for (auto &chain: rings) {
+        for (int id_chain: chain){
+            int ind = prot_id[id_chain];
+                *rings_xyz_file << "rings " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
+
+        }
+    }
+
+// Now we can finally analyze the persistence length!
 
 
     return cluster_size;

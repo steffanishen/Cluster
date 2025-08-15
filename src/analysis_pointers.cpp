@@ -658,13 +658,15 @@ vector<ANALYSIS*> ANALYSIS_POINTERS::init() {
                         networks_xyz_filename = analysis_opt[argid+1];
                     }  else if (analysis_opt[argid] == "chains_xyz_filename") {
                         chains_xyz_filename = analysis_opt[argid+1];
+                    }  else if (analysis_opt[argid] == "rings_xyz_filename") {
+                        rings_xyz_filename = analysis_opt[argid+1];
                     }  else if (analysis_opt[argid] == "dist_crit") {
                         dist_crit = stof(analysis_opt[argid+1]);
                     }  else if (analysis_opt[argid] == "cellsize") {
                         cellsize = stof(analysis_opt[argid+1]);
                     }
                 }
-                analysis.push_back(new ANALYSIS_PERSISTENCE(system,sels[groupid],vector1d,vector2d,voidf,filename,xyz_filename,networks_xyz_filename,chains_xyz_filename,dist_crit,cellsize));
+                analysis.push_back(new ANALYSIS_PERSISTENCE(system,sels[groupid],vector1d,vector2d,voidf,filename,xyz_filename,networks_xyz_filename,chains_xyz_filename,rings_xyz_filename,dist_crit,cellsize));
 
             
         } else if (analysis_opt[0] == "patch_no_order") {
