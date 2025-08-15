@@ -40,7 +40,7 @@
 
 using namespace std;
 
-ANALYSIS_PERSISTENCE::ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, float dist_crit, float cellsize)
+ANALYSIS_PERSISTENCE::ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, string networks_xyz_filename, string chains_xyz_filename,  float dist_crit, float cellsize)
 {
     this->system = system;
     this->sel1 = sel1;
@@ -50,6 +50,8 @@ ANALYSIS_PERSISTENCE::ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1
     this->filename = filename;
     this->xyz_filename = xyz_filename;
     xyz_file = new ofstream (xyz_filename.c_str());
+    networks_xyz_file = new ofstream (networks_xyz_filename.c_str());
+    chains_xyz_file = new ofstream (chains_xyz_filename.c_str());
     this->dist_crit = dist_crit;
     this->cellsize = cellsize;
     //this->rdf_count.resize(nbins);
@@ -78,10 +80,11 @@ void ANALYSIS_PERSISTENCE::wrap_positions() {
     }
 }
 
-vector<vector<int>> ANALYSIS_PERSISTENCE::adjacency_list() {
+//vector<vector<int>> ANALYSIS_PERSISTENCE::adjacency_list() {
+void ANALYSIS_PERSISTENCE::adjacency_list() {
 
     vector<int> linkedlist(sel1->NATOM,-1);
-    vector<vector<int>> adj_list(sel1->NATOM);
+//    vector<vector<int>> adj_list(sel1->NATOM);
     vector<float> r(3,0.0);
     vector<float> r1(3,0.0);
     float dist_crit2 = this->dist_crit*this->dist_crit;
@@ -178,8 +181,8 @@ vector<vector<int>> ANALYSIS_PERSISTENCE::adjacency_list() {
                                 float dist2 = disp[0]*disp[0] + disp[1]*disp[1] + disp[2]*disp[2];
 
                                 if (dist2 < dist_crit2) {
-                                    adj_list[i].push_back(j);
-                                    adj_list[j].push_back(i);
+                                    this->adj_list[i].push_back(j);
+                                    this->adj_list[j].push_back(i);
                                 }
                             /*
                             */
@@ -198,14 +201,29 @@ vector<vector<int>> ANALYSIS_PERSISTENCE::adjacency_list() {
     }
 
 
+    i = 0;
+    for (auto &segment:sel1->segments_ind) {
+	    for (int ind : segment) {
+            if (this->adj_list[i].size() > 2) hubs.push_back(i);
+            else if (this->adj_list[i].size() == 1) ends.push_back(i);
+            else if (this->adj_list[i].size() == 2) mids.push_back(i);
+            i++;
+        }
+    }
 
 
-
-    return adj_list;
+//    return adj_list;
 }
 
 vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
-    sel1->anglezs.clear();
+    this->hubs.clear();
+    this->ends.clear();
+    this->mids.clear();
+    this->edgesVisited.clear();
+    this->adj_list.clear();
+    this->adj_list.resize(sel1->NATOM);
+    vector<vector<int>> chains;
+    vector<vector<int>> rings;
     vector<float> r(3,0.0);
     vector<float> r1(3,0.0);
     vector<float> disp(3,0.0);
@@ -236,74 +254,43 @@ vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
             // Assign atoms to cells
             // Obtain headers of each cell, and linked list of each atom
         // Second, build the adjancency list for each atom
-    vector<vector<int>> adj_list = adjacency_list();
+    //vector<vector<int>> adj_list = adjacency_list();
+    adjacency_list(); // make adjacency list a class property
 
-    //debug
-    //cout << "adjacency list: " << endl;
-    //for (vector<int> adj_l : adj_list) {
-    //    cout << adj_l.size() << endl;
-    //}
-    //end debug
-
-    // Third, do breadth first search (BFS) to identify clusters
-        // Initialize the remaining proteins
-    std::deque<int> remaining_proteins(sel1->NATOM);
-    std::iota(remaining_proteins.begin(), remaining_proteins.end(), 0); // Fill with 0, 1, ..., natoms-1
-        // Starting from current cluster_id, identify the clusters. Keep isolated proteins' cluster_id=0
-    int current_cluster_id = 0;
-                //cout << "cluster_id: " << current_cluster_id << " remaining proteins: " << remaining_proteins.size() << endl;//debug
-
-    while (!remaining_proteins.empty()) { // Equivalent to `while remaining_proteins:`
-                //cout << "cluster_id: " << current_cluster_id << endl;//debug
-        int i = remaining_proteins.front(); // Get the first element
-        remaining_proteins.pop_front();    // Remove the first element (popleft)
-
-        std::vector<int> current_cluster; // Keep track of atoms assigned to the current cluster
-        current_cluster.push_back(i); // Add atom 'i' to the current cluster
-        
-        std::deque<int> queue; // BFS queue
-        queue.push_back(i);
-
-        // Check if `i` has neighbors.
-        // In the original Python, `len(adj_list[i]) > 0` is used. 
-        // In C++, the BFS will effectively only run if neighbors exist.
-        // So this explicit check is not strictly necessary but can be kept for clarity.
-        if (!adj_list[i].empty()) { 
-            cluster_id[i] = current_cluster_id;
-
-
-            while (!queue.empty()) {
-                int current_node = queue.front();
-                queue.pop_front();
-
-                for (int neighbor : adj_list[current_node]) { // Iterate through neighbors
-                    // Check if neighbor not in current_cluster
-                    // Python's `in` operator on lists can be slow.
-                    // If `current_cluster` becomes very large, consider using `std::set` or `std::unordered_set`
-                    // for faster lookup. However, for a single cluster's atoms, `std::find` on a `std::vector` is often acceptable.
-                    if (std::find(current_cluster.begin(), current_cluster.end(), neighbor) == current_cluster.end()) {
-                        current_cluster.push_back(neighbor);
-                        queue.push_back(neighbor);
-                        cluster_id[neighbor] = current_cluster_id;
-
-                        // This is the most problematic part for direct translation: `remaining_proteins.remove(neighbor)`
-                        // `std::deque::erase` can be relatively slow if the element is not at the ends.
-                        // A more efficient approach for the `remaining_proteins` set is often a boolean `visited` array, 
-                        // or to handle removal differently. For now, a direct translation is shown.
-                        remaining_proteins.erase(std::remove(remaining_proteins.begin(), remaining_proteins.end(), neighbor), remaining_proteins.end());
-                    }
-                }
+    //creat lists of hubs, ends and mids based on the size of adjacency lists
+    // Use Depth first search (DFS) to identify chains
+    // Step 1: Handle hubs
+        while (!hubs.empty()) {
+            int hub = hubs.front(); hubs.pop_front();
+            for (int nb : adj_list[hub]) {
+                if (edge_visited(hub, nb)) continue;
+                mark_edge(hub, nb);
+                std::vector<int> chain = traverse_chain(hub, nb);
+                chains.push_back(chain);
             }
         }
-        current_cluster_id++;
-        
-        clusters.push_back(current_cluster); // Add the completed cluster to the list of all clusters
-    }
 
-    for (vector<int> cluster : clusters) {
-        cluster_size.push_back(cluster.size());
-    }
+        // Step 2: Handle remaining ends
+        while (!ends.empty()) {
+            int end = ends.front(); ends.pop_front();
+            for (int nb : adj_list[end]) {
+                if (edge_visited(end, nb)) continue;
+                mark_edge(end, nb);
+                std::vector<int> chain = traverse_chain(end, nb);
+                chains.push_back(chain);
+            }
+        }
 
+    // Step 3: Analyez the rings
+        while (!mids.empty()) {
+            int mid = mids.front(); mids.pop_front();
+            for (int nb : adj_list[mid]) {
+                if (edge_visited(mid, nb)) continue;
+                mark_edge(mid, nb);
+                std::vector<int> ring = traverse_chain(mid, nb);
+                rings.push_back(ring);
+            }
+        }
 
 
 
@@ -312,12 +299,39 @@ vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
     //*xyz_file << sel1->NATOM << endl;//<< " " << system->pbc[0] << " " << system->pbc[2] << " " << system->pbc[5]  << endl;
     *xyz_file << endl;
 
+    int nhubs = 0;
     int i = 0;
     for (auto &segment:sel1->segments_ind) {
 	    for (int ind : segment) {
-            *xyz_file << clusters[cluster_id[i]].size() << " " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
+            if (adj_list[i].size() > 2) {
+                *xyz_file << "hubs " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
             //*xyz_file << cluster_id[i] << " " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << " " << system->pbc[1] << endl; 
+                nhubs += 1;
+            } else if (adj_list[i].size() == 1) {
+                *xyz_file << "ends " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
+            } else if (adj_list[i].size() == 2) {
+                *xyz_file << "mids " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
+            } else {
+                *xyz_file << "monomers " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
+            }
             i++;
+        }
+    }
+
+    int n_networks = 0;
+    for (auto &chain: chains) {
+        n_networks += chain.size();
+    }
+
+    *networks_xyz_file << n_networks << " " << system->pbc[0] << " " << system->pbc[2] << " " << system->pbc[5]  << endl;
+    //*xyz_file << sel1->NATOM << endl;//<< " " << system->pbc[0] << " " << system->pbc[2] << " " << system->pbc[5]  << endl;
+    *networks_xyz_file << endl;
+
+    for (auto &chain: chains) {
+        for (int id_chain: chain){
+            int ind = prot_id[id_chain];
+                *networks_xyz_file << "networks " << system->x[ind] << " " << system->y[ind] << " " << system->z[ind] << endl; 
+
         }
     }
 

@@ -638,6 +638,9 @@ vector<ANALYSIS*> ANALYSIS_POINTERS::init() {
                 float dist_crit;
                 float cellsize;
                 string xyz_filename;
+                string networks_xyz_filename;
+                string chains_xyz_filename;
+                string rings_xyz_filename;
                 for (int argid = 1; argid < analysis_opt.size(); argid++) {
                     if (analysis_opt[argid] == "group") {
                         groupid = stoi(analysis_opt[argid+1]);
@@ -651,13 +654,17 @@ vector<ANALYSIS*> ANALYSIS_POINTERS::init() {
                         filename = analysis_opt[argid+1];
                     }  else if (analysis_opt[argid] == "xyz_filename") {
                         xyz_filename = analysis_opt[argid+1];
+                    }  else if (analysis_opt[argid] == "networks_xyz_filename") {
+                        networks_xyz_filename = analysis_opt[argid+1];
+                    }  else if (analysis_opt[argid] == "chains_xyz_filename") {
+                        chains_xyz_filename = analysis_opt[argid+1];
                     }  else if (analysis_opt[argid] == "dist_crit") {
                         dist_crit = stof(analysis_opt[argid+1]);
                     }  else if (analysis_opt[argid] == "cellsize") {
                         cellsize = stof(analysis_opt[argid+1]);
                     }
                 }
-                analysis.push_back(new ANALYSIS_PERSISTENCE(system,sels[groupid],vector1d,vector2d,voidf,filename,xyz_filename,dist_crit,cellsize));
+                analysis.push_back(new ANALYSIS_PERSISTENCE(system,sels[groupid],vector1d,vector2d,voidf,filename,xyz_filename,networks_xyz_filename,chains_xyz_filename,dist_crit,cellsize));
 
             
         } else if (analysis_opt[0] == "patch_no_order") {
