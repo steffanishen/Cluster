@@ -84,6 +84,7 @@ public:
     ofstream *networks_xyz_file;
     ofstream *chains_xyz_file;
     ofstream *rings_xyz_file;
+    ofstream *bondlength_file;
 
     std::deque<int> hubs, ends, mids;
     std::unordered_map<long long, bool> edgesVisited;
@@ -94,7 +95,7 @@ public:
     string xyz_filename;
     vector<int> prot_id;
 
-    ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, string networks_xyz_filename, string chains_xyz_filename, string rings_xyz_filename,  float dist_crit, float cellsize); //constructor
+    ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, string networks_xyz_filename, string chains_xyz_filename, string rings_xyz_filename, string bondlength_filename,  float dist_crit, float cellsize); //constructor
     
     //vector<vector<int>> adjacency_list();
     void adjacency_list();

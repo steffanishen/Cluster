@@ -40,7 +40,7 @@
 
 using namespace std;
 
-ANALYSIS_PERSISTENCE::ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, string networks_xyz_filename, string chains_xyz_filename, string rings_xyz_filename,  float dist_crit, float cellsize)
+ANALYSIS_PERSISTENCE::ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1d, int vector2d, int voidf, string filename, string xyz_filename, string networks_xyz_filename, string chains_xyz_filename, string rings_xyz_filename, string bondlength_filename,  float dist_crit, float cellsize)
 {
     this->system = system;
     this->sel1 = sel1;
@@ -53,6 +53,7 @@ ANALYSIS_PERSISTENCE::ANALYSIS_PERSISTENCE(PSF *system, GROUP *sel1, int vector1
     networks_xyz_file = new ofstream (networks_xyz_filename.c_str());
     chains_xyz_file = new ofstream (chains_xyz_filename.c_str());
     rings_xyz_file = new ofstream (rings_xyz_filename.c_str());
+    bondlength_file = new ofstream (bondlength_filename.c_str());
     this->dist_crit = dist_crit;
     this->cellsize = cellsize;
     //this->rdf_count.resize(nbins);
@@ -226,6 +227,10 @@ vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
     vector<vector<int>> networks;
     vector<vector<int>> chains;
     vector<vector<int>> rings;
+    vector<float> polymerbondlength;
+    vector<int> chainlength;
+    vector<float> correlationij;
+    vector<int> correlation_count;
     vector<float> r(3,0.0);
     vector<float> r1(3,0.0);
     vector<float> disp(3,0.0);
@@ -268,7 +273,8 @@ vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
                 if (edge_visited(hub, nb)) continue;
                 mark_edge(hub, nb);
                 std::vector<int> chain = traverse_chain(hub, nb);
-                networks.push_back(chain);
+        // We remove dimers or trimers from the network type clusters
+                if (chain.size() > 4) networks.push_back(chain);
             }
         }
 
@@ -373,10 +379,126 @@ vector<float> ANALYSIS_PERSISTENCE::compute_vector() {
         }
     }
 
-// Now we can finally analyze the persistence length!
+    for (auto &chain: networks) {
+        chainlength.push_back(chain.size());
+        for (int id_chain = 0; id_chain < chain.size()-1; id_chain++){
+            int ind = prot_id[id_chain] - 1;
+            int ind1 = ind + 1;
+	        r[0] = system->x[ind];
+	        r[1] = system->y[ind];
+	        r[2] = system->z[ind];
+	        r1[0] = system->x[ind1];
+	        r1[1] = system->y[ind1];
+	        r1[2] = system->z[ind1];
+            polymerbondlength.push_back(norm(getDistPoints(r, r1)));
+        }
+    }
+
+    for (auto &chain: chains) {
+        chainlength.push_back(chain.size());
+        for (int id_chain = 0; id_chain < chain.size()-1; id_chain++){
+            int ind = prot_id[id_chain] - 1;
+            int ind1 = ind + 1;
+	        r[0] = system->x[ind];
+	        r[1] = system->y[ind];
+	        r[2] = system->z[ind];
+	        r1[0] = system->x[ind1];
+	        r1[1] = system->y[ind1];
+	        r1[2] = system->z[ind1];
+            polymerbondlength.push_back(norm(getDistPoints(r, r1)));
+        }
+    }
+
+    for (auto &chain: rings) {
+        chainlength.push_back(chain.size());
+        for (int id_chain = 0; id_chain < chain.size()-1; id_chain++){
+            int ind = prot_id[id_chain] - 1;
+            int ind1 = ind + 1;
+	        r[0] = system->x[ind];
+	        r[1] = system->y[ind];
+	        r[2] = system->z[ind];
+	        r1[0] = system->x[ind1];
+	        r1[1] = system->y[ind1];
+	        r1[2] = system->z[ind1];
+            polymerbondlength.push_back(norm(getDistPoints(r, r1)));
+        }
+    }
+
+    float average_bondlength = 0.0;
+
+    auto max_chainlength = max_element(chainlength.begin(),chainlength.end());
+    if (max_chainlength != chainlength.end()) {
+        cout << "max_chainlength: " << *max_chainlength << endl;
+        correlationij.resize(*max_chainlength);
+        correlation_count.resize(*max_chainlength);
+        fill(correlation_count.begin(),correlation_count.end(),0);
+
+        for (auto bl : polymerbondlength) {
+            *bondlength_file << bl << " ";
+            average_bondlength += bl;
+        }
+        *bondlength_file << endl;
+
+        average_bondlength /= static_cast<float>(polymerbondlength.size());
+        cout << "average_bondlength: " << average_bondlength << endl;
+
+    }
 
 
-    return cluster_size;
+// We can finally analyze the persistence length now!
+    if (max_chainlength != chainlength.end()) {
+        vector<vector<int>> all_chains;
+        //copy(networks.begin(), networks.end(), back_inserter(all_chains));
+        all_chains.insert(all_chains.end(),networks.begin(),networks.end());
+        all_chains.insert(all_chains.end(),chains.begin(),chains.end());
+        all_chains.insert(all_chains.end(),rings.begin(),rings.end());
+
+        for (auto &chain: chains) {
+            for (int id_chain = 0; id_chain < chain.size()-2; id_chain++){
+                int ind = prot_id[chain[id_chain]];
+                int ind1 = prot_id[chain[id_chain + 1]];
+                r[0] = system->x[ind];
+                r[1] = system->y[ind];
+                r[2] = system->z[ind];
+                r1[0] = system->x[ind1];
+                r1[1] = system->y[ind1];
+                r1[2] = system->z[ind1];
+                vector<float> disp = getDistPoints(r, r1);
+
+                for (int id_chain1 = id_chain; id_chain1 < chain.size()-1; id_chain1++){
+                    ind = prot_id[chain[id_chain1]];
+                    ind1 = prot_id[chain[id_chain1 + 1]];
+                    r[0] = system->x[ind];
+                    r[1] = system->y[ind];
+                    r[2] = system->z[ind];
+                    r1[0] = system->x[ind1];
+                    r1[1] = system->y[ind1];
+                    r1[2] = system->z[ind1];
+                    vector<float> disp1 = getDistPoints(r, r1);
+                    float costhetaij = dot_product(disp,disp1)/(norm(disp)*norm(disp1));
+                    correlationij[id_chain1 - id_chain] += costhetaij;
+                    correlation_count[id_chain1 - id_chain] += 1;
+
+
+                }
+                
+                
+
+            }
+        }
+
+        for (auto id_along_chain=0; id_along_chain < *max_chainlength; id_along_chain++) {
+            if (correlation_count[id_along_chain] > 0) {
+                correlationij[id_along_chain] /= static_cast<float>(correlation_count[id_along_chain]);
+            }
+        }
+
+
+    }
+
+
+
+    return correlationij;
 }
 
 
